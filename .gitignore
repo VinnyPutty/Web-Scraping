@@ -168,5 +168,7 @@ typings/
 */csv
 package-lock.json
 */screenshots/*
-*/img_downloads/*
+*/img_downloads
 .idea
+
+#d2checklist/img_downloads/
