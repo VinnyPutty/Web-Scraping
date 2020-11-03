@@ -51,8 +51,8 @@ const downloadCSV_ = async (page) => {
 }
 
 const importCSV = async (browser) => {
-    // playground: 1c3A_4IpttnxASV4Jav13VpK6fkj-0JK_CgPD_FnnWvY
-    // official: 1oWFPCrHyKy5kzQdteDj5NrUJBQ9OEGDCfeNX_9BT2iQ
+    // playground: 1c3A_4IpttnxASV4Jav13VpK6fkj-0JK_CgPD_FnnWvY  // 279931197
+    // official: 1oWFPCrHyKy5kzQdteDj5NrUJBQ9OEGDCfeNX_9BT2iQ  // 1266473862
     // google-provided test sheet: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/1c3A_4IpttnxASV4Jav13VpK6fkj-0JK_CgPD_FnnWvY/edit'
 
@@ -257,7 +257,7 @@ const importCsvUsingGApi = async (auth, values) => {
         resource: {
             valueInputOption: 'USER_ENTERED',
             data: [{
-                range: 'BOOP!A1:BR101',
+                range: 'BOOP!A1:CD101',
                 majorDimension: 'ROWS',
                 values: values
             }]
