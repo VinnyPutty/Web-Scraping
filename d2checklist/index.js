@@ -372,7 +372,7 @@ const main = async () => {
     // time.
     global.TOKEN_PATH = 'token.json';
 
-    global.D2CHECKLIST_LOAD_DELAY = 80000 // in ms
+    global.D2CHECKLIST_LOAD_DELAY = 100000 // in ms
 
     let boop_number = 3063489
 
