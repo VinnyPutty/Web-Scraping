@@ -274,6 +274,68 @@ const importCsvUsingGApi = async (auth, values) => {
     });
 }
 
+const sortByColumnUsingGApi = async (auth, sortColumn, ascending) => {
+    if (!sortColumn && !SORTCOLUMN) return console.error('Sort column is empty:', sortColumn)
+    if (!sortColumn) sortColumn = SORTCOLUMN
+    if (ascending === undefined) ascending = false
+
+    // "sortRange": {
+    //     "range": {
+    //         "sheetId": sheetId,
+    //             "startRowIndex": 0,
+    //             "endRowIndex": 10,
+    //             "startColumnIndex": 0,
+    //             "endColumnIndex": 6
+    //     },
+    //     "sortSpecs": [
+    //         {
+    //             "dimensionIndex": 1,
+    //             "sortOrder": "ASCENDING"
+    //         },
+    //         {
+    //             "dimensionIndex": 3,
+    //             "sortOrder": "DESCENDING"
+    //         },
+    //         {
+    //             "dimensionIndex": 4,
+    //             "sortOrder": "DESCENDING"
+    //         }
+
+    const sheets = google.sheets({version: 'v4', auth})
+    console.log('Sorting spreadsheet by column: ' + sortColumn + '...')
+    await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: '1oWFPCrHyKy5kzQdteDj5NrUJBQ9OEGDCfeNX_9BT2iQ',
+        resource: {
+            "requests": [{
+                "sortRange": {
+                    "range": {
+                        "sheetId": 1266473862,
+                        "startRowIndex": 0,
+                        "endRowIndex": 101,
+                        "startColumnIndex": 0,
+                        "endColumnIndex": sortColumn + 1
+                    },
+                    "sortSpecs": [{
+                        "dimensionIndex": sortColumn,
+                        "sortOrder": "DESCENDING"
+                    }]
+                }
+            }]
+        }
+    }, (err, res) => {
+        if (err) return console.error('The API returned an error: ' + err)
+        // console.log(res)
+        const replies = res.data.replies
+        if (replies){
+            Object.entries(replies).forEach(([key, value]) => {
+                console.log(key + ' - ' + JSON.stringify(value, null, 4)) // key - value
+            })
+        } else {
+            console.log('No data received.')
+        }
+    });
+}
+
 const importCsvUsingGsApi = async (auth, token) => {
     // const creds = require('./d2checklist-1586736924438-2a15d312da26-credentials.json')
     const doc = new GoogleSpreadsheet('1c3A_4IpttnxASV4Jav13VpK6fkj-0JK_CgPD_FnnWvY');
