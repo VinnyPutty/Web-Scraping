@@ -425,7 +425,7 @@ function onChanged(current, previous, path, timer, clientCallback) {
 
 }
 
-const main = async () => {
+const main_ = async () => {
 
     // If modifying these scopes, delete token.json.
     global.SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -495,4 +495,48 @@ const main = async () => {
 
 }
 
-main().then(r => console.log('Main finished.'))
+const main = async () => {
+
+    // If modifying these scopes, delete token.json.
+    global.SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+    // The file token.json stores the user's access and refresh tokens, and is
+    // created automatically when the authorization flow completes for the first
+    // time.
+    global.TOKEN_PATH = 'token.json';
+
+    global.D2CHECKLIST_LOAD_DELAY = 100000 // in ms
+
+    let boop_number = 3063489
+
+    // puppeteer.use(StealthPlugin())
+
+    let today_date = new Date().toISOString().replace(/T.+/, '')
+    let file_path = `D:/Downloads/clan-progress-${today_date}.csv`
+
+    if (!fs.existsSync(file_path)) {
+        let browser = await puppeteer.launch({headless: false});
+        await downloadCSV(boop_number, true, browser).then(() => console.log('Finished.'))
+
+        startWaiting(file_path, parseCsvIntoValues, D2CHECKLIST_LOAD_DELAY + 20000)
+    } else {
+        await parseCsvIntoValues(file_path)
+        global.D2CHECKLIST_LOAD_DELAY = 10000
+    }
+
+    setTimeout(fs.readFile, D2CHECKLIST_LOAD_DELAY + 25000, 'credentials.json', (err, content) => {
+        if (err) return console.error('Error loading client secret file:', err);
+        // Authorize a client with credentials, then call the Google Sheets API.
+        authorize(JSON.parse(content), importCsvUsingGApi);
+    });
+
+    global.SORTCOLUMN = 82
+
+    setTimeout(fs.readFile, D2CHECKLIST_LOAD_DELAY + 35000, 'credentials.json', (err, content) => {
+        if (err) return console.error('Error loading client secret file:', err);
+        // Authorize a client with credentials, then call the Google Sheets API.
+        authorize(JSON.parse(content), sortByColumnUsingGApi);
+    });
+
+}
+
+main().then(() => console.log('Main finished.'))
