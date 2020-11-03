@@ -384,13 +384,13 @@ const main = async () => {
     let today_date = new Date().toISOString().replace(/T.+/, '')
     let file_path = `D:/Downloads/clan-progress-${today_date}.csv`
 
-    // startWaiting(file_path, parseCsvIntoValues, D2CHECKLIST_LOAD_DELAY + 20000)
+    startWaiting(file_path, parseCsvIntoValues, D2CHECKLIST_LOAD_DELAY + 20000)
 
-    // setTimeout(fs.readFile, D2CHECKLIST_LOAD_DELAY + 25000, 'credentials.json', (err, content) => {
-    //     if (err) return console.error('Error loading client secret file:', err);
-    //     // Authorize a client with credentials, then call the Google Sheets API.
-    //     authorize(JSON.parse(content), importCsvUsingGApi);
-    // });
+    setTimeout(fs.readFile, D2CHECKLIST_LOAD_DELAY + 25000, 'credentials.json', (err, content) => {
+        if (err) return console.error('Error loading client secret file:', err);
+        // Authorize a client with credentials, then call the Google Sheets API.
+        authorize(JSON.parse(content), importCsvUsingGApi);
+    });
 
     // await fs.readFile('credentials.json', (err, content) => {
     //     if (err) return console.error('Error loading client secret file:', err);
