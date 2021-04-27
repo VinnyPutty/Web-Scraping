@@ -3,6 +3,7 @@ const fs = require('fs');
 const fs_promises = fs.promises
 const readline = require('readline');
 const {google} = require('googleapis');
+const pth = require('path');
 
 const downloadCSV = async (clan_number, close_on_completion, browser) => {
     browser = typeof browser !== 'undefined' ? browser : await puppeteer.launch({headless: false});
@@ -12,6 +13,7 @@ const downloadCSV = async (clan_number, close_on_completion, browser) => {
     await page.on('load', async () => {
         console.log('Loaded: ' + page.url())
         await downloadCSV_(page)
+        await page.waitForTimeout(2000)
         await page.close()
     })
 
@@ -33,6 +35,7 @@ const downloadCSV = async (clan_number, close_on_completion, browser) => {
 
 const downloadCSV_ = async (page) => {
     await page.waitForNavigation({
+        timeout: NETWORK_IDLE_DELAY ? NETWORK_IDLE_DELAY : 30000,
         waitUntil: 'networkidle0',
     });
     console.log('Navigation achieved.')
@@ -40,7 +43,7 @@ const downloadCSV_ = async (page) => {
     await page.waitForSelector('.ng-fa-icon.accent-text.ng-star-inserted')
     console.log('Selector achieved.')
     let button = await page.$('.mat-focus-indicator.mat-stroked-button.mat-button-base')
-    await page.waitForTimeout(D2CHECKLIST_LOAD_DELAY)
+    await page.waitForTimeout(D2CHECKLIST_LOAD_DELAY - NETWORK_IDLE_DELAY)
     await button.click()
     console.log('Button clicked.')
     return button
@@ -133,6 +136,7 @@ const importCsvUsingGApi = async (auth, values) => {
             console.log('No response received.')
         }
     });
+    
 }
 
 const sortByColumnUsingGApi = async (auth, sortColumn, ascending) => {
@@ -203,6 +207,7 @@ const parseCsvIntoValues = async (filepath) => {
     try {
         csv_content = await fs_promises.readFile(filepath)
         global.VALUES = await parseCsvContentIntoValues(csv_content.toString())
+        markCsvUsed(filepath)
         return VALUES
     } catch (err) {
         console.error('Error loading csv file:', err)
@@ -261,6 +266,27 @@ function onChanged(current, previous, path, timer, clientCallback) {
 
 }
 
+const markCsvUsed = (filePath) => {
+    pathObj = pth.parse(filePath)
+    bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + pathObj.ext
+    if (fs.existsSync(bak)) {
+        i = 0
+        while (fs.existsSync(bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + i + pathObj.ext)) {i++}
+    }
+    fs_promises.rename(filePath, bak)
+}
+
+const computeDelay = () => {
+    const MINUTES_EARLY = 15;
+    var now = new Date();
+    var then = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
+    var diff = then.getTime() - now.getTime() - (MINUTES_EARLY * 60 * 1000);
+    // var now = new Date(), 
+    //     then = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0),
+    //     diff = then.getTime() - now.getTime() - (MINUTES_EARLY * 60 * 1000);
+    return diff;
+}
+
 const main = async () => {
 
     // If modifying these scopes, delete token.json.
@@ -271,7 +297,9 @@ const main = async () => {
     // time.
     global.TOKEN_PATH = 'token.json';
 
-    global.D2CHECKLIST_LOAD_DELAY = 100000; // in ms
+    global.NETWORK_IDLE_DELAY = 100000
+
+    global.D2CHECKLIST_LOAD_DELAY = NETWORK_IDLE_DELAY + 100000; // in ms
 
     let boop_number = 3063489;
 
@@ -282,9 +310,10 @@ const main = async () => {
     let today_date = new Date().toISOString().replace(/T.+/, '')
     let file_path = `D:/Downloads/clan-progress-${today_date}.csv`
 
+    // TODO: implement Grab csv data from webpage directly, bypassing file watch, after clicking download button
     if (!fs.existsSync(file_path)) {
         let browser = await puppeteer.launch({headless: false});
-        await downloadCSV(boop_number, true, browser).then(() => console.log('Finished.'))
+        await downloadCSV(boop_number, true, browser).then(() => console.log('Browser launched.')) // should be "Download finished.", but is not logged in correct order, so changed for accuracy temporarily
 
         startWaiting(file_path, parseCsvIntoValues, D2CHECKLIST_LOAD_DELAY + 20000)
     } else {
@@ -307,6 +336,10 @@ const main = async () => {
         authorize(JSON.parse(content), sortByColumnUsingGApi);
     });
 
+    
+
 }
 
 main().then(() => console.log('Main finished.'))
+
+setTimeout(async () => main().then(() => console.log('Delayed main finished.')), computeDelay());
