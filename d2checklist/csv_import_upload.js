@@ -4,6 +4,7 @@ const fs_promises = fs.promises
 const readline = require('readline');
 const {google} = require('googleapis');
 const pth = require('path');
+const os = require('os');
 
 const downloadCSV = async (clan_number, close_on_completion, browser) => {
     browser = typeof browser !== 'undefined' ? browser : await puppeteer.launch({headless: false});
@@ -268,10 +269,12 @@ function onChanged(current, previous, path, timer, clientCallback) {
 
 const markCsvUsed = (filePath) => {
     pathObj = pth.parse(filePath)
-    bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + pathObj.ext
+    bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + pathObj.ext; // for windows machines
+    // bak = pathObj.dir + '/' + pathObj.name + '_used' + pathObj.ext; // for macos machines
     if (fs.existsSync(bak)) {
         i = 0
-        while (fs.existsSync(bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + i + pathObj.ext)) {i++}
+        while (fs.existsSync(bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + i + pathObj.ext)) {i++} // for windows machines
+        // while (fs.existsSync(bak = pathObj.dir + '/' + pathObj.name + '_used' + i + pathObj.ext)) {i++} // for macos machines
     }
     fs_promises.rename(filePath, bak)
 }
@@ -307,8 +310,9 @@ const main = async () => {
 
     global.SHEET_ID = 1266473862;
 
-    let today_date = new Date().toISOString().replace(/T.+/, '')
-    let file_path = `D:/Downloads/clan-progress-${today_date}.csv`
+    let today_date = new Date().toISOString().replace(/T.+/, '');
+    let file_path = `D:/Downloads/clan-progress-${today_date}.csv`; // default file path for windows machines
+    // let file_path = `${os.homedir()}/Downloads/clan-progress-${today_date}.csv`; // default filepath for macos machines
 
     // TODO: implement Grab csv data from webpage directly, bypassing file watch, after clicking download button
     if (!fs.existsSync(file_path)) {
