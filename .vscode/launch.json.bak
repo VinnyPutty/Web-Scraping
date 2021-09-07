@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "csv_import_upload",
+            // "skipFiles": [
+            //     "<node_internals>/**"
+            // ],
+            // "program": "${workspaceFolder}\\d2checklist\\csv_import_upload.js",
+            // "cwd": "${workspaceFolder}\\d2checklist\\",
+            "windows": {
+                "name": "csv_import_upload",
+                "type": "node",
+                "request": "launch",
+                "program": "${workspaceFolder}\\d2checklist\\csv_import_upload.js",
+                "cwd": "${workspaceFolder}\\d2checklist\\",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ]
+            },
+            "linux": {
+                "name": "csv_import_upload",
+                "type": "node",
+                "request": "launch",
+                "program": "${workspaceFolder}/d2checklist/csv_import_upload.js",
+                "cwd": "${workspaceFolder}/d2checklist/",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ]
+            },
+            "osx": {
+                "name": "csv_import_upload",
+                "type": "node",
+                "request": "launch",
+                "program": "${workspaceFolder}/d2checklist/csv_import_upload.js",
+                "cwd": "${workspaceFolder}/d2checklist/",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ]
+            }
+
+        }
+    ]
+}
