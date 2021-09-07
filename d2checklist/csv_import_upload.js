@@ -41,9 +41,10 @@ const downloadCSV_ = async (page) => {
     });
     console.log('Navigation achieved.')
     // await page.waitForTimeout(D2CHECKLIST_LOAD_DELAY)
-    await page.waitForSelector('.ng-fa-icon.accent-text.ng-star-inserted')
+    // await page.waitForSelector('.ng-fa-icon.accent-text.ng-star-inserted')
     console.log('Selector achieved.')
     let button = await page.$('.mat-focus-indicator.mat-stroked-button.mat-button-base')
+    console.log('Button found.');
     await page.waitForTimeout(D2CHECKLIST_LOAD_DELAY - NETWORK_IDLE_DELAY)
     await button.click()
     console.log('Button clicked.')
@@ -269,12 +270,12 @@ function onChanged(current, previous, path, timer, clientCallback) {
 
 const markCsvUsed = (filePath) => {
     pathObj = pth.parse(filePath)
-    bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + pathObj.ext; // for windows machines
-    // bak = pathObj.dir + '/' + pathObj.name + '_used' + pathObj.ext; // for macos machines
+    // bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + pathObj.ext; // for windows machines
+    bak = pathObj.dir + '/' + pathObj.name + '_used' + pathObj.ext; // for macos and linux machines
     if (fs.existsSync(bak)) {
         i = 0
-        while (fs.existsSync(bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + i + pathObj.ext)) {i++} // for windows machines
-        // while (fs.existsSync(bak = pathObj.dir + '/' + pathObj.name + '_used' + i + pathObj.ext)) {i++} // for macos machines
+        // while (fs.existsSync(bak = pathObj.dir + '\\\\' + pathObj.name + '_used' + i + pathObj.ext)) {i++} // for windows machines
+        while (fs.existsSync(bak = pathObj.dir + '/' + pathObj.name + '_used' + i + pathObj.ext)) {i++} // for macos and linux machines
     }
     fs_promises.rename(filePath, bak)
 }
@@ -292,6 +293,8 @@ const computeDelay = () => {
 
 const main = async () => {
 
+    global.SCHEDULE_SECOND_UPDATE = false;
+
     // If modifying these scopes, delete token.json.
     global.SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
     
@@ -300,7 +303,7 @@ const main = async () => {
     // time.
     global.TOKEN_PATH = 'token.json';
 
-    global.NETWORK_IDLE_DELAY = 100000
+    global.NETWORK_IDLE_DELAY = 100000;
 
     global.D2CHECKLIST_LOAD_DELAY = NETWORK_IDLE_DELAY + 100000; // in ms
 
@@ -311,8 +314,8 @@ const main = async () => {
     global.SHEET_ID = 1266473862;
 
     let today_date = new Date().toISOString().replace(/T.+/, '');
-    let file_path = `D:/Downloads/clan-progress-${today_date}.csv`; // default file path for windows machines
-    // let file_path = `${os.homedir()}/Downloads/clan-progress-${today_date}.csv`; // default filepath for macos machines
+    // let file_path = `C:/Users/vinay/Downloads/clan-progress-${today_date}.csv`; // default file path for windows machines
+    let file_path = `${os.homedir()}/Downloads/clan-progress-${today_date}.csv`; // default filepath for macos and linux machines
 
     // TODO: implement Grab csv data from webpage directly, bypassing file watch, after clicking download button
     if (!fs.existsSync(file_path)) {
@@ -346,4 +349,8 @@ const main = async () => {
 
 main().then(() => console.log('Main finished.'))
 
-setTimeout(async () => main().then(() => console.log('Delayed main finished.')), computeDelay());
+if (SCHEDULE_SECOND_UPDATE) {
+    const delay = computeDelay()
+    console.log(`Delaying second run for ${delay} seconds...`);
+    setTimeout(async () => main().then(() => console.log('Delayed main finished.')), delay);
+}
