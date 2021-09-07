@@ -7,12 +7,43 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}\\d2checklist\\csv_import_upload.js",
-            "cwd": "${workspaceFolder}\\d2checklist\\"
+            "name": "csv_import_upload",
+            // "skipFiles": [
+            //     "<node_internals>/**"
+            // ],
+            // "program": "${workspaceFolder}\\d2checklist\\csv_import_upload.js",
+            // "cwd": "${workspaceFolder}\\d2checklist\\",
+            "windows": {
+                "name": "csv_import_upload",
+                "type": "node",
+                "request": "launch",
+                "program": "${workspaceFolder}\\d2checklist\\csv_import_upload.js",
+                "cwd": "${workspaceFolder}\\d2checklist\\",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ]
+            },
+            "linux": {
+                "name": "csv_import_upload",
+                "type": "node",
+                "request": "launch",
+                "program": "${workspaceFolder}/d2checklist/csv_import_upload.js",
+                "cwd": "${workspaceFolder}/d2checklist/",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ]
+            },
+            "osx": {
+                "name": "csv_import_upload",
+                "type": "node",
+                "request": "launch",
+                "program": "${workspaceFolder}/d2checklist/csv_import_upload.js",
+                "cwd": "${workspaceFolder}/d2checklist/",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ]
+            }
+
         }
     ]
 }
