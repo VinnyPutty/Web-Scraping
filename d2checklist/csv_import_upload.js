@@ -24,10 +24,12 @@ const downloadCSV = async (clan_number, close_on_completion, browser) => {
                 try {
                     await initPage.waitForTimeout(2000)
                     await initPage.close()
+                    console.log('Browser closed.')
                 } catch (err) {
                     //pass
                 }
             }
+            await browser?.close()
         })
     }
 
@@ -124,7 +126,7 @@ const importCsvUsingGApi = async (auth, values) => {
         resource: {
             valueInputOption: 'USER_ENTERED',
             data: [{
-                range: 'BOOP!A1:CD101',
+                range: 'BOOP!A1:EY101',
                 majorDimension: 'ROWS',
                 values: values
             }]
@@ -142,8 +144,8 @@ const importCsvUsingGApi = async (auth, values) => {
 }
 
 const sortByColumnUsingGApi = async (auth, sortColumn, ascending) => {
-    if (!sortColumn && !SORTCOLUMN) return console.error('Sort column is empty:', sortColumn)
-    if (!sortColumn) sortColumn = SORTCOLUMN
+    if (!sortColumn && !SORT_COLUMN) return console.error('Sort column is empty:', sortColumn)
+    if (!sortColumn) sortColumn = SORT_COLUMN
     if (ascending === undefined) ascending = false
 
     // "sortRange": {
@@ -335,7 +337,7 @@ const main = async () => {
         authorize(JSON.parse(content), importCsvUsingGApi);
     });
 
-    global.SORTCOLUMN = 82
+    global.SORT_COLUMN = 155;
 
     setTimeout(fs.readFile, D2CHECKLIST_LOAD_DELAY + 35000, 'credentials.json', (err, content) => {
         if (err) return console.error('Error loading client secret file:', err);
